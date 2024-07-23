@@ -1,0 +1,40 @@
+#Scenario:
+#You are tasked with writing an Ansible playbook that deploys a web application onto a set of webservers. 
+#The application's source code is hosted on a Git repository. 
+#
+#Requirements:
+#1. Clone the application's Git repository to a specific directory on all webservers.
+#2. Ensure the latest version of Apache is installed on all webservers.
+#5. Restart Apache service if it is not running or if the configuration file has been changed.
+#
+#Try writing an Ansible playbook that fulfills these requirements. Good luck with your interview preparation!
+
+            
+                      
+                
+---
+- name: apache
+  hosts: localhost
+  gather_facts: yes
+  become: yes
+  ignore_errors: yes
+  tasks:
+    - block:
+        - git:
+          repo: https://github.com/amandeepkh1/simple-java-maven-app.git
+          dest: /Users/amandeepkaur/Documents/ansible
+    - block:
+         - name: Install apache
+           apt:
+             name: httpd
+             state: present
+           notify: restart apache
+  handlers:
+         - name: restart apache
+           service:
+              name: httpd
+              state: restarted
+  
+
+  
+  

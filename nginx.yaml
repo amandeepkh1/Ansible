@@ -1,0 +1,38 @@
+#Scenario:
+#You are tasked with writing an Ansible playbook that deploys a web application onto a set of webservers. 
+#The application's source code is hosted on a Git repository. 
+#
+#Requirements:
+#1. Clone the application's Git repository to a specific directory on all webservers.
+#2. Ensure the latest version of nginx is installed on all webservers.
+#5. Restart nginx service if it is not running or if the configuration file has been changed.
+#
+#Try writing an Ansible playbook that fulfills these requirements. Good luck with your interview preparation!                
+---
+- name: nginx
+  hosts: localhost
+  gather_facts: yes # module which collects the facts (useful variables)  of the remote hosts automatically. It uses  ansible.builtin.setup module by default. 
+  become: yes # it is directive used to run the playbook with privileged access.
+  ignore_errors: yes #  diretive to suppress errors and allow playbook to run susbequent tasks even if error occurrs during exceution of the playbook.
+  tasks:
+    - block:
+        - git:
+          repo: https://github.com/amandeepkh1/simple-java-maven-app.git
+          dest: /Users/amandeepkaur/Documents/ansible
+    - block: # is a way to group tasks together and apply common condiations to all of them. Eg: when condition.
+        - name: install nginx
+          apt:
+           name: nginx
+           state: present
+          notify: restart nginx # directive
+  handlers: #special tasks triggred by notify directive. They are used to preform actions which need to be trigerred usually once at the end of the playbook run, when certain  changes have been made. eg : restart services
+    - name: restart nginx
+      service:
+       name: nginx
+       state: restarted
+
+
+  
+
+  
+  

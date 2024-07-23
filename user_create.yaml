@@ -1,0 +1,53 @@
+#Write an Ansible playbook that creates a new user on the remote host and sets up SSH keys for that user.
+
+#Make sure to replace remote_host with the actual hostname or IP address of your remote server, and adjust the paths to your SSH keys accordingly. 
+#This playbook will create the user, create the .ssh directory, and upload the SSH key for the new use
+
+---
+- name: New user creation
+  hosts: remote_host
+  remote_user: root
+  tasks:
+    - name: Create  new user
+      user: 
+        name: new user
+        createhome: yes
+    - name: Create .ssh folder
+      file:
+        path: /home/newuser/.ssh
+        state: directory
+        owner: newuser
+        group: newuser
+        mode: 0700
+    - name: upload ssh keys
+      copy:
+        src: /keys/newuser
+        dest: /home/newuser/.ssh/id_rsa
+        owner: newuser
+        group: newuser
+        mode: 0700
+___
+- name: Create new user and set ssh keys
+  hosts: remote_host
+  become: yes
+  tasks:
+    - name: Create new user
+      user:
+        name: newuser
+        state: present
+        createhome: yes
+    - name: generate ssh keys
+      community.crypto.openssh_keypairs
+      path: /home/newuser/.ssh/id_rsa
+      type: rsa
+      size: 2048
+      state: present
+
+  
+
+#path: Specifies the path where the key files will be saved.
+#type: Specifies the key type (e.g., rsa, ed25519, etc.).
+#size: Specifies the key size (e.g., 2048, 4096, etc.).
+#state: Set to present to ensure the keypair is generated
+#The createhome: yes option ensures that the user’s home directory is created.
+#The openssh_keypair module generates an RSA keypair for the specified user.

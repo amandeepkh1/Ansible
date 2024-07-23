@@ -1,0 +1,22 @@
+- name: Create new user and set ssh keys
+  hosts: remote_host
+  become: yes
+  tasks:
+    - name: Create new user
+      user:
+        name: newuser
+        state: present
+        createhome: yes
+    - name: generate ssh keys
+       community.crypto.openssh_keypairs
+      path: /home/newuser/.ssh/id_rsa
+      type: rsa
+      size: 2048
+      state: present
+
+#path: Specifies the path where the key files will be saved.
+#type: Specifies the key type (e.g., rsa, ed25519, etc.).
+#size: Specifies the key size (e.g., 2048, 4096, etc.).
+#state: Set to present to ensure the keypair is generated
+#The createhome: yes option ensures that the user’s home directory is created.
+#The openssh_keypair module generates an RSA keypair for the specified user.
